@@ -1,8 +1,11 @@
 import React from 'react';
+import { View, StyleSheet } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from '../theme/colors';
+import features from '../config/features';
+import FloatingChatButton from '../components/FloatingChatButton';
 
 // Admin Screens
 import AdminDashboardScreen from '../screens/admin/AdminDashboardScreen';
@@ -13,6 +16,8 @@ import EditEmployeeScreen from '../screens/admin/EditEmployeeScreen';
 import RecordsScreen from '../screens/admin/RecordsScreen';
 import SchedulesScreen from '../screens/admin/SchedulesScreen';
 import SettingsScreen from '../screens/admin/SettingsScreen';
+import AIChatScreen from '../screens/admin/AIChatScreen';
+import AIInsightsScreen from '../screens/admin/AIInsightsScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -87,46 +92,75 @@ const SettingsStack = () => (
   </Stack.Navigator>
 );
 
+// Stack para Chat IA
+const AIChatStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen 
+      name="AIChatMain" 
+      component={AIChatScreen}
+      options={{ title: 'Chat IA' }}
+    />
+  </Stack.Navigator>
+);
+
+// Stack para Insights IA
+const AIInsightsStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen 
+      name="AIInsightsMain" 
+      component={AIInsightsScreen}
+      options={{ title: 'Insights IA' }}
+    />
+  </Stack.Navigator>
+);
+
 const AdminNavigator = () => {
   return (
-    <Tab.Navigator
-      screenOptions={({ route }) => ({
-        tabBarIcon: ({ focused, color, size }) => {
-          let iconName;
+    <View style={{ flex: 1 }}>
+      <Tab.Navigator
+        screenOptions={({ route }) => ({
+          tabBarIcon: ({ focused, color, size }) => {
+            let iconName;
 
-          switch (route.name) {
-            case 'DashboardTab':
-              iconName = 'view-dashboard';
-              break;
-            case 'EmployeesTab':
-              iconName = 'account-group';
-              break;
-            case 'RecordsTab':
-              iconName = 'clipboard-text';
-              break;
-            case 'SchedulesTab':
-              iconName = 'calendar-clock';
-              break;
-            case 'SettingsTab':
-              iconName = 'cog';
-              break;
-            default:
-              iconName = 'circle';
-          }
+            switch (route.name) {
+              case 'DashboardTab':
+                iconName = 'view-dashboard';
+                break;
+              case 'EmployeesTab':
+                iconName = 'account-group';
+                break;
+              case 'RecordsTab':
+                iconName = 'clipboard-text';
+                break;
+              case 'SchedulesTab':
+                iconName = 'calendar-clock';
+                break;
+              case 'AIChatTab':
+                iconName = 'robot';
+                break;
+              case 'AIInsightsTab':
+                iconName = 'lightbulb-on';
+                break;
+              case 'SettingsTab':
+                iconName = 'cog';
+                break;
+              default:
+                iconName = 'circle';
+            }
 
-          return <Icon name={iconName} size={size} color={color} />;
-        },
-        tabBarActiveTintColor: colors.brandLight,
-        tabBarInactiveTintColor: colors.gray[500],
-        tabBarStyle: {
-          backgroundColor: colors.white,
-          borderTopColor: colors.border,
-          paddingBottom: 5,
-          height: 60,
-        },
-        headerShown: false,
-      })}
-    >
+            return <Icon name={iconName} size={size} color={color} />;
+          },
+          tabBarActiveTintColor: colors.brandLight,
+          tabBarInactiveTintColor: colors.gray[500],
+          tabBarStyle: {
+            backgroundColor: colors.white,
+            borderTopColor: colors.border,
+            paddingBottom: 5,
+            height: 60,
+          },
+          headerShown: false,
+        })}
+      >
       <Tab.Screen 
         name="DashboardTab" 
         component={DashboardStack}
@@ -147,12 +181,21 @@ const AdminNavigator = () => {
         component={SchedulesStack}
         options={{ tabBarLabel: 'Horarios' }}
       />
+      {features.aiUtils && (
+        <Tab.Screen 
+          name="AIInsightsTab" 
+          component={AIInsightsStack}
+          options={{ tabBarLabel: 'Insights' }}
+        />
+      )}
       <Tab.Screen 
         name="SettingsTab" 
         component={SettingsStack}
         options={{ tabBarLabel: 'Ajustes' }}
       />
     </Tab.Navigator>
+    <FloatingChatButton />
+    </View>
   );
 };
 

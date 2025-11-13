@@ -216,7 +216,7 @@ const AdminDashboardScreen = ({ navigation }) => {
               <View style={styles.recordHeader}>
                 <View style={styles.recordEmployee}>
                   <Icon name="account" size={20} color={colors.brandLight} />
-                  <Text style={styles.employeeName}>{record.Employee?.name || 'N/A'}</Text>
+                  <Text style={styles.employeeName}>{record.employee?.name || record.Employee?.name || 'N/A'}</Text>
                 </View>
                 <Text style={styles.recordTime}>
                   {formatTime(record.checkIn)}

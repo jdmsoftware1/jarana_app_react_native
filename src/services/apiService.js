@@ -267,27 +267,47 @@ export const aiService = {
     return response.data;
   },
 
-  // Verificar si IA está habilitada
-  checkStatus: async () => {
-    const response = await api.get('/ai/status');
+  // Análisis de patrones de trabajo
+  analyzePatterns: async (employeeId = null, days = 30) => {
+    const params = { days };
+    if (employeeId) params.employeeId = employeeId;
+    const response = await api.get('/ai/analyze-patterns', { params });
     return response.data;
   },
 
-  // Obtener conocimiento
-  getKnowledge: async () => {
-    const response = await api.get('/ai/knowledge');
+  // Resumen de anomalías
+  getAnomaliesSummary: async (days = 7) => {
+    const response = await api.get('/ai/anomalies-summary', { params: { days } });
     return response.data;
   },
 
-  // Añadir conocimiento
-  addKnowledge: async (content, category) => {
-    const response = await api.post('/ai/knowledge', { content, category });
+  // Insights de empleado específico
+  getEmployeeInsights: async (employeeId, days = 30) => {
+    const response = await api.get(`/ai/employee-insights/${employeeId}`, { params: { days } });
     return response.data;
   },
 
-  // Eliminar conocimiento
-  deleteKnowledge: async (id) => {
-    const response = await api.delete(`/ai/knowledge/${id}`);
+  // Predicción de carga de trabajo
+  predictWorkload: async (weeks = 4) => {
+    const response = await api.get('/ai/predict-workload', { params: { weeks } });
+    return response.data;
+  },
+
+  // Alertas inteligentes
+  getSmartAlerts: async () => {
+    const response = await api.get('/ai/smart-alerts');
+    return response.data;
+  },
+
+  // Estadísticas de la base de conocimiento
+  getKnowledgeStats: async () => {
+    const response = await api.get('/ai/knowledge-stats');
+    return response.data;
+  },
+
+  // Recargar base de conocimiento
+  reloadKnowledge: async () => {
+    const response = await api.post('/ai/reload-knowledge');
     return response.data;
   },
 };
