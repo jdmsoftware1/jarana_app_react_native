@@ -22,6 +22,22 @@ const LoginSelectionScreen = ({ navigation }) => {
 
         {/* Selection Cards */}
         <View style={styles.cardsContainer}>
+          {/* Clerk Login */}
+          <TouchableOpacity
+            style={styles.card}
+            onPress={() => navigation.navigate('ClerkSignIn')}
+            activeOpacity={0.8}
+          >
+            <View style={styles.cardIcon}>
+              <Icon name="account-circle" size={48} color={colors.brandLight} />
+            </View>
+            <Text style={styles.cardTitle}>Acceso con Clerk</Text>
+            <Text style={styles.cardDescription}>
+              Autenticación segura con email
+            </Text>
+            <Icon name="chevron-right" size={24} color={colors.brandLight} />
+          </TouchableOpacity>
+
           {/* Admin Login */}
           <TouchableOpacity
             style={styles.card}

@@ -7,18 +7,12 @@ import colors from '../theme/colors';
 // Admin Screens
 import AdminDashboardScreen from '../screens/admin/AdminDashboardScreen';
 import EmployeesScreen from '../screens/admin/EmployeesScreen';
-import RecordsScreen from '../screens/admin/RecordsScreen';
-import SchedulesScreen from '../screens/admin/SchedulesScreen';
-import SettingsScreen from '../screens/admin/SettingsScreen';
-
-// Detail Screens
 import EmployeeDetailScreen from '../screens/admin/EmployeeDetailScreen';
 import CreateEmployeeScreen from '../screens/admin/CreateEmployeeScreen';
 import EditEmployeeScreen from '../screens/admin/EditEmployeeScreen';
-import ScheduleTemplatesScreen from '../screens/admin/ScheduleTemplatesScreen';
-import WeeklySchedulesScreen from '../screens/admin/WeeklySchedulesScreen';
-import VacationsScreen from '../screens/admin/VacationsScreen';
-import AIKnowledgeScreen from '../screens/admin/AIKnowledgeScreen';
+import RecordsScreen from '../screens/admin/RecordsScreen';
+import SchedulesScreen from '../screens/admin/SchedulesScreen';
+import SettingsScreen from '../screens/admin/SettingsScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -78,26 +72,6 @@ const SchedulesStack = () => (
       name="SchedulesMain" 
       component={SchedulesScreen}
       options={{ title: 'Horarios' }}
-    />
-    <Stack.Screen 
-      name="ScheduleTemplates" 
-      component={ScheduleTemplatesScreen}
-      options={{ title: 'Plantillas' }}
-    />
-    <Stack.Screen 
-      name="WeeklySchedules" 
-      component={WeeklySchedulesScreen}
-      options={{ title: 'Horarios Semanales' }}
-    />
-    <Stack.Screen 
-      name="Vacations" 
-      component={VacationsScreen}
-      options={{ title: 'Vacaciones' }}
-    />
-    <Stack.Screen 
-      name="AIKnowledge" 
-      component={AIKnowledgeScreen}
-      options={{ title: 'Gestión IA' }}
     />
   </Stack.Navigator>
 );

@@ -4,9 +4,7 @@ import { createStackNavigator } from '@react-navigation/stack';
 import { useAuth } from '../context/AuthContext';
 
 // Auth Screens
-import LoginSelectionScreen from '../screens/auth/LoginSelectionScreen';
-import AdminLoginScreen from '../screens/auth/AdminLoginScreen';
-import EmployeeLoginScreen from '../screens/auth/EmployeeLoginScreen';
+import GoogleLoginScreen from '../screens/auth/GoogleLoginScreen';
 
 // Main Screens
 import AdminNavigator from './AdminNavigator';
@@ -29,11 +27,7 @@ const AppNavigator = () => {
       <Stack.Navigator screenOptions={{ headerShown: false }}>
         {!isAuthenticated ? (
           // Auth Stack
-          <>
-            <Stack.Screen name="LoginSelection" component={LoginSelectionScreen} />
-            <Stack.Screen name="AdminLogin" component={AdminLoginScreen} />
-            <Stack.Screen name="EmployeeLogin" component={EmployeeLoginScreen} />
-          </>
+          <Stack.Screen name="GoogleLogin" component={GoogleLoginScreen} />
         ) : (
           // Main App Stack
           <>

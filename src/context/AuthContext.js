@@ -16,6 +16,35 @@ export const AuthProvider = ({ children }) => {
 
   const checkAuth = async () => {
     try {
+      // 🔧 MODO DEV: Saltear autenticación
+      const environment = process.env.EXPO_PUBLIC_ENVIRONMENT;
+      const devRole = process.env.EXPO_PUBLIC_DEV_ROLE;
+
+      console.log('🔍 Verificando modo:', {
+        environment,
+        devRole,
+        allEnv: process.env
+      });
+
+      if (environment === 'DEV') {
+        console.log('🔧 Modo DEV activado - Salteando autenticación');
+        const mockUser = {
+          id: 'dev-user-123',
+          name: 'Usuario Dev',
+          email: 'dev@test.com',
+          role: devRole || 'employee',
+          employeeCode: 'DEV001',
+          isActive: true,
+        };
+        setUser(mockUser);
+        setIsAuthenticated(true);
+        setLoading(false);
+        return;
+      }
+      
+      console.log('🔐 Modo PRODUCCIÓN - Verificando autenticación normal');
+
+      // Modo PRODUCCIÓN: Autenticación normal
       const token = await AsyncStorage.getItem('token');
       const userData = await AsyncStorage.getItem('user');
 
@@ -67,6 +96,21 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
+  const handleGoogleCallback = async (token) => {
+    try {
+      await AsyncStorage.setItem('token', token);
+      // Verificar el token y obtener datos del usuario
+      const response = await authService.verifyToken();
+      await AsyncStorage.setItem('user', JSON.stringify(response.employee));
+      setUser(response.employee);
+      setIsAuthenticated(true);
+      return { success: true };
+    } catch (error) {
+      console.error('Google callback error:', error);
+      return { success: false, error: error.message };
+    }
+  };
+
   const logout = async () => {
     try {
       await AsyncStorage.removeItem('token');
@@ -100,6 +144,7 @@ export const AuthProvider = ({ children }) => {
     logout,
     updateUser,
     checkAuth,
+    handleGoogleCallback,
   };
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>;

@@ -1,13 +1,23 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
-// Configuración de la API
-// Cambia esto a la URL de tu servidor en producción
-export const API_BASE_URL = __DEV__ 
-  ? 'http://localhost:3000/api'  // Desarrollo
-  : 'https://tu-servidor.com/api'; // Producción
+// Configuración de la API usando variables de entorno
+const getBaseUrl = () => {
+  const apiUrl = process.env.EXPO_PUBLIC_API_URL;
+  
+  if (apiUrl) {
+    // Si la URL no tiene /api al final, añadirlo
+    return apiUrl.endsWith('/api') ? apiUrl : `${apiUrl}/api`;
+  }
+  
+  // Fallback por defecto
+  return __DEV__ 
+    ? 'http://192.168.31.164:3000/api'  // Desarrollo
+    : 'https://jarana-horas-back.onrender.com/api'; // Producción
+};
 
-// Para Android Emulator usa: http://10.0.2.2:3000/api
-// Para dispositivo físico usa la IP de tu computadora: http://192.168.x.x:3000/api
+export const API_BASE_URL = getBaseUrl();
+
+console.log('🌐 API URL configurada:', API_BASE_URL);
 
 export const getApiUrl = () => API_BASE_URL;
 

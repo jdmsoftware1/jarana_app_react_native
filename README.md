@@ -1,6 +1,131 @@
 # 📱 Registro Horario - Aplicación Móvil
 
-Aplicación móvil React Native para el sistema de registro horario, compatible con Android e iOS.
+Aplicación móvil para el sistema de registro horario con autenticación Google OAuth.
+
+## 🚀 Configuración
+
+### 1. Variables de Entorno
+
+Crea un archivo `.env` en la raíz del proyecto:
+
+#### Modo Desarrollo (DEV)
+```env
+EXPO_PUBLIC_API_URL=http://192.168.31.164:3000
+EXPO_PUBLIC_ENVIRONMENT=DEV
+EXPO_PUBLIC_DEV_ROLE=admin
+# O EXPO_PUBLIC_DEV_ROLE=employee para probar como empleado
+```
+
+#### Modo Producción (PRO)
+```env
+EXPO_PUBLIC_API_URL=https://jarana-horas-back.onrender.com
+EXPO_PUBLIC_ENVIRONMENT=PRO
+```
+
+**Nota**: En modo DEV, la autenticación se saltea automáticamente y se usa un usuario mock con el rol especificado.
+
+### 2. Instalación
+
+```bash
+npm install
+```
+
+### 3. Iniciar la App
+
+```bash
+npm start
+```
+
+## 🔐 Autenticación
+
+La app usa **Google OAuth 2.0** exactamente igual que la aplicación web:
+
+1. Usuario hace clic en "Continuar con Google"
+2. Se abre el navegador con la autenticación de Google
+3. El backend valida que el email esté autorizado
+4. Si está autorizado, redirige a la app con el token
+5. La app guarda el token y muestra el dashboard correspondiente
+
+### Flujo de Autenticación
+
+- **Administradores**: Acceden al dashboard de administración
+- **Empleados**: Acceden al dashboard de empleado
+
+## 📱 Pantalla de Empleado
+
+La pantalla principal del empleado muestra:
+
+1. **Horas trabajadas esta semana**
+2. **Resumen de última acción** (ej: "Salida registrada a las 18:30")
+3. **Botón para fichar entrada/salida**
+
+Además tiene acceso a:
+- Chat con IA
+- Solicitar vacaciones  
+- Ver registros completos
+- Ver horario
+
+## 🏗️ Estructura
+
+```
+src/
+├── screens/
+│   ├── auth/
+│   │   └── GoogleLoginScreen.js    # Login con Google OAuth
+│   ├── employee/
+│   │   ├── EmployeeDashboardScreen.js  # Dashboard empleado
+│   │   ├── CheckInOutScreen.js         # Fichar entrada/salida
+│   │   ├── MyRecordsScreen.js          # Mis registros
+│   │   └── ProfileScreen.js            # Perfil
+│   └── admin/
+│       └── ...                          # Pantallas de admin
+├── navigation/
+│   ├── AppNavigator.js              # Navegación principal
+│   ├── EmployeeNavigator.js         # Navegación empleado
+│   └── AdminNavigator.js            # Navegación admin
+├── context/
+│   └── AuthContext.js               # Contexto de autenticación
+└── services/
+    └── apiService.js                # Servicios API
+
+```
+
+## 🔧 Configuración del Backend
+
+El backend debe tener configurado:
+
+1. Google OAuth con las credenciales correctas
+2. Redirect URI que incluya el esquema de la app: `registrohorario://auth/callback`
+3. Lista de emails autorizados en la base de datos
+
+## 📦 Dependencias Principales
+
+- `expo` - Framework
+- `react-navigation` - Navegación
+- `react-native-paper` - UI Components
+- `expo-web-browser` - OAuth flow
+- `expo-auth-session` - Manejo de sesiones OAuth
+- `axios` - HTTP client
+
+## 🎨 Tema
+
+La app usa el mismo esquema de colores que la web:
+- Brand Light: #8B7355
+- Brand Medium: #6B5744
+- Brand Dark: #4A3F35
+
+## 📱 Deep Linking
+
+La app está configurada con el esquema `registrohorario://` para recibir callbacks de OAuth.
+
+Configurado en `app.json`:
+```json
+{
+  "expo": {
+    "scheme": "registrohorario"
+  }
+}
+```
 
 ## 🚀 Características
 
