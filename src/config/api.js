@@ -9,10 +9,8 @@ const getBaseUrl = () => {
     return apiUrl.endsWith('/api') ? apiUrl : `${apiUrl}/api`;
   }
   
-  // Fallback por defecto
-  return __DEV__ 
-    ? 'http://192.168.31.164:3000/api'  // Desarrollo
-    : 'https://jarana-horas-back.onrender.com/api'; // Producción
+  // Fallback por defecto - Siempre usar Render en producción
+  return 'https://jarana-horas-back.onrender.com/api';
 };
 
 export const API_BASE_URL = getBaseUrl();

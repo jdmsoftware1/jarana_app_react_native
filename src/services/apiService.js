@@ -259,6 +259,89 @@ export const vacationService = {
   },
 };
 
+// ==================== DOCUMENTS ====================
+export const documentService = {
+  // Obtener documentos recibidos (empleado)
+  getMyDocuments: async () => {
+    const response = await api.get('/documents/admin-to-employee/my-documents');
+    return response.data;
+  },
+
+  // Obtener documentos enviados por mí (empleado)
+  getMySentDocuments: async () => {
+    const response = await api.get('/documents/employee-to-admin/my-documents');
+    return response.data;
+  },
+
+  // Subir documento (empleado a admin)
+  uploadDocument: async (formData) => {
+    const response = await api.post('/documents/employee-to-admin', formData, {
+      headers: { 'Content-Type': 'multipart/form-data' },
+    });
+    return response.data;
+  },
+
+  // Marcar como leído
+  markAsRead: async (documentId) => {
+    const response = await api.post(`/documents/${documentId}/mark-read`);
+    return response.data;
+  },
+
+  // Descargar documento (retorna URL)
+  getDownloadUrl: (documentId) => {
+    return `${getApiUrl()}/documents/${documentId}/download`;
+  },
+
+  // Admin: obtener todos los documentos
+  getAllDocuments: async (params = {}) => {
+    const response = await api.get('/documents/all', { params });
+    return response.data;
+  },
+
+  // Admin: obtener documentos pendientes
+  getPendingDocuments: async () => {
+    const response = await api.get('/documents/pending-from-employees');
+    return response.data;
+  },
+
+  // Admin: revisar documento
+  reviewDocument: async (documentId, status, notes = '') => {
+    const response = await api.patch(`/documents/${documentId}/review`, { status, notes });
+    return response.data;
+  },
+};
+
+// ==================== EXPORT (CSV) ====================
+export const exportService = {
+  // Exportar auditoría
+  getAuditExportUrl: (startDate, endDate, employeeId = null) => {
+    let url = `${getApiUrl()}/records/export/audit?startDate=${startDate}&endDate=${endDate}`;
+    if (employeeId) url += `&employeeId=${employeeId}`;
+    return url;
+  },
+
+  // Exportar resumen mensual
+  getSummaryExportUrl: (month, year) => {
+    return `${getApiUrl()}/records/export/summary?month=${month}&year=${year}`;
+  },
+
+  // Exportar vacaciones
+  getVacationsExportUrl: (year, status = null) => {
+    let url = `${getApiUrl()}/records/export/vacations?year=${year}`;
+    if (status) url += `&status=${status}`;
+    return url;
+  },
+
+  // Descargar con autenticación
+  downloadWithAuth: async (url) => {
+    const token = await AsyncStorage.getItem('token');
+    const response = await fetch(url, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    return response;
+  },
+};
+
 // ==================== AI ====================
 export const aiService = {
   // Chat con IA

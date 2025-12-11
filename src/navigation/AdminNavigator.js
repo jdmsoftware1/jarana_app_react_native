@@ -18,6 +18,7 @@ import SchedulesScreen from '../screens/admin/SchedulesScreen';
 import SettingsScreen from '../screens/admin/SettingsScreen';
 import AIChatScreen from '../screens/admin/AIChatScreen';
 import AIInsightsScreen from '../screens/admin/AIInsightsScreen';
+import DocumentsAdminScreen from '../screens/admin/DocumentsAdminScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -114,6 +115,17 @@ const AIInsightsStack = () => (
   </Stack.Navigator>
 );
 
+// Stack para Documentos
+const DocumentsStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen 
+      name="DocumentsMain" 
+      component={DocumentsAdminScreen}
+      options={{ title: 'Documentos' }}
+    />
+  </Stack.Navigator>
+);
+
 const AdminNavigator = () => {
   return (
     <View style={{ flex: 1 }}>
@@ -134,6 +146,9 @@ const AdminNavigator = () => {
                 break;
               case 'SchedulesTab':
                 iconName = 'calendar-clock';
+                break;
+              case 'DocumentsTab':
+                iconName = 'file-document-multiple';
                 break;
               case 'AIChatTab':
                 iconName = 'robot';
@@ -180,6 +195,11 @@ const AdminNavigator = () => {
         name="SchedulesTab" 
         component={SchedulesStack}
         options={{ tabBarLabel: 'Horarios' }}
+      />
+      <Tab.Screen 
+        name="DocumentsTab" 
+        component={DocumentsStack}
+        options={{ tabBarLabel: 'Docs' }}
       />
       {features.aiUtils && (
         <Tab.Screen 

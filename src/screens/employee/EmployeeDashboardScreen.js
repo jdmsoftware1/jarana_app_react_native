@@ -11,7 +11,7 @@ import { Text } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { useAuth } from '../../context/AuthContext';
-import { recordService } from '../../services/apiService';
+import { recordService, documentService } from '../../services/apiService';
 import LoadingSpinner from '../../components/LoadingSpinner';
 import StatCard from '../../components/StatCard';
 import Card from '../../components/Card';
@@ -26,6 +26,7 @@ const EmployeeDashboardScreen = ({ navigation }) => {
   const [refreshing, setRefreshing] = useState(false);
   const [status, setStatus] = useState(null);
   const [stats, setStats] = useState(null);
+  const [unreadDocuments, setUnreadDocuments] = useState(0);
 
   useEffect(() => {
     fetchData();
@@ -34,12 +35,14 @@ const EmployeeDashboardScreen = ({ navigation }) => {
   const fetchData = async () => {
     try {
       setLoading(true);
-      const [statusData, statsData] = await Promise.all([
+      const [statusData, statsData, documentsData] = await Promise.all([
         recordService.getStatus(),
         recordService.getHoursStats(user.id),
+        documentService.getMyDocuments().catch(() => []),
       ]);
       setStatus(statusData);
       setStats(statsData);
+      setUnreadDocuments(documentsData.filter(d => !d.readAt).length);
     } catch (error) {
       console.error('Error fetching data:', error);
     } finally {
@@ -239,10 +242,17 @@ const EmployeeDashboardScreen = ({ navigation }) => {
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.quickLink}
-            onPress={() => navigation.navigate('ScheduleTab')}
+            onPress={() => navigation.navigate('DocumentsTab')}
           >
-            <Icon name="calendar" size={24} color={colors.brandLight} />
-            <Text style={styles.quickLinkText}>Mi Horario</Text>
+            <View>
+              <Icon name="file-document" size={24} color={colors.brandLight} />
+              {unreadDocuments > 0 && (
+                <View style={styles.quickLinkBadge}>
+                  <Text style={styles.quickLinkBadgeText}>{unreadDocuments}</Text>
+                </View>
+              )}
+            </View>
+            <Text style={styles.quickLinkText}>Documentos</Text>
           </TouchableOpacity>
           <TouchableOpacity
             style={styles.quickLink}
@@ -417,6 +427,22 @@ const styles = StyleSheet.create({
     color: colors.text.primary,
     marginTop: spacing.sm,
     textAlign: 'center',
+  },
+  quickLinkBadge: {
+    position: 'absolute',
+    top: -8,
+    right: -8,
+    backgroundColor: colors.error,
+    borderRadius: 10,
+    minWidth: 18,
+    height: 18,
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  quickLinkBadgeText: {
+    color: colors.white,
+    fontSize: 10,
+    fontWeight: 'bold',
   },
 });
 
