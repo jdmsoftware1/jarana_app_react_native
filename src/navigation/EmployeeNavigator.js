@@ -11,6 +11,7 @@ import MyRecordsScreen from '../screens/employee/MyRecordsScreen';
 import MyScheduleScreen from '../screens/employee/MyScheduleScreen';
 import ProfileScreen from '../screens/employee/ProfileScreen';
 import DocumentsScreen from '../screens/employee/DocumentsScreen';
+import VacationsScreen from '../screens/employee/VacationsScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -81,6 +82,17 @@ const DocumentsStack = () => (
   </Stack.Navigator>
 );
 
+// Stack para Vacaciones
+const VacationsStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen 
+      name="Vacations" 
+      component={VacationsScreen}
+      options={{ title: 'Vacaciones' }}
+    />
+  </Stack.Navigator>
+);
+
 const EmployeeNavigator = () => {
   return (
     <Tab.Navigator
@@ -98,8 +110,8 @@ const EmployeeNavigator = () => {
             case 'RecordsTab':
               iconName = 'clipboard-text';
               break;
-            case 'DocumentsTab':
-              iconName = 'file-document';
+            case 'VacationsTab':
+              iconName = 'calendar-clock';
               break;
             case 'ProfileTab':
               iconName = 'account';
@@ -137,9 +149,9 @@ const EmployeeNavigator = () => {
         options={{ tabBarLabel: 'Registros' }}
       />
       <Tab.Screen 
-        name="DocumentsTab" 
-        component={DocumentsStack}
-        options={{ tabBarLabel: 'Documentos' }}
+        name="VacationsTab" 
+        component={VacationsStack}
+        options={{ tabBarLabel: 'Vacaciones' }}
       />
       <Tab.Screen 
         name="ProfileTab" 

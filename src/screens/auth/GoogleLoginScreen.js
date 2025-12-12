@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, Text, StyleSheet, Alert, Image } from 'react-native';
+import { View, Text, StyleSheet, Alert, Image, Platform } from 'react-native';
 import { Button } from 'react-native-paper';
 import { LinearGradient } from 'expo-linear-gradient';
 import * as WebBrowser from 'expo-web-browser';
@@ -46,51 +46,97 @@ const GoogleLoginScreen = () => {
   }, []);
 
   const handleDeepLink = async ({ url }) => {
-    if (!url) return;
+    console.log('\n========== DEEP LINK RECIBIDO ==========');
+    console.log('📥 URL recibida:', url);
+    
+    if (!url) {
+      console.log('❌ URL vacía, ignorando');
+      return;
+    }
 
     // Extraer el token de la URL
     const params = Linking.parse(url);
+    console.log('🔍 Params parseados:', JSON.stringify(params, null, 2));
+    
     const token = params.queryParams?.token;
     const error = params.queryParams?.error;
+    
+    console.log('🎫 Token:', token ? `${token.substring(0, 20)}...` : 'NO HAY TOKEN');
+    console.log('⚠️ Error:', error || 'ninguno');
 
     if (error) {
+      console.log('❌ Error en callback:', error);
       Alert.alert('Error', getErrorMessage(error));
       setLoading(false);
       return;
     }
 
     if (token) {
+      console.log('✅ Token recibido, procesando autenticación...');
       setLoading(true);
       const result = await handleGoogleCallback(token);
+      console.log('📊 Resultado de handleGoogleCallback:', result);
       if (!result.success) {
+        console.log('❌ Error en autenticación:', result.error);
         Alert.alert('Error', result.error || 'Error al autenticar');
+      } else {
+        console.log('✅ Autenticación exitosa!');
       }
       setLoading(false);
+    } else {
+      console.log('❌ No se recibió token en la URL');
     }
+    console.log('========================================\n');
   };
 
   const handleGoogleLogin = async () => {
+    console.log('\n========== INICIANDO LOGIN GOOGLE ==========');
+    console.log('📱 Platform:', Platform.OS);
+    console.log('🌐 API_URL:', API_URL);
+    
     try {
       setLoading(true);
       
-      // URL del backend para iniciar OAuth con parámetro mobile=true
-      const authUrl = `${API_URL}/auth/google?mobile=true`;
+      // En web, usar flujo diferente (redirigir directamente sin mobile=true)
+      if (Platform.OS === 'web') {
+        console.log('🌐 Detectado WEB - redirigiendo a flujo web');
+        window.location.href = `${API_URL}/auth/google`;
+        return;
+      }
       
+      // Obtener la URL de callback de Expo (funciona tanto en Expo Go como en standalone)
+      const redirectUrl = Linking.createURL('auth/callback');
+      console.log('🔗 Redirect URL generada:', redirectUrl);
+      
+      // URL del backend para iniciar OAuth con parámetro mobile=true y la URL de callback
+      const authUrl = `${API_URL}/auth/google?mobile=true&redirect_uri=${encodeURIComponent(redirectUrl)}`;
+      console.log('🔐 Auth URL:', authUrl);
+      
+      console.log('🚀 Abriendo navegador para OAuth...');
       // Abrir el navegador para autenticación
       const result = await WebBrowser.openAuthSessionAsync(
         authUrl,
-        Linking.createURL('/auth/callback')
+        redirectUrl
       );
 
-      if (result.type === 'success') {
-        // El callback se manejará en handleDeepLink
-        console.log('OAuth success:', result.url);
+      console.log('\n========== RESULTADO OAUTH ==========');
+      console.log('📱 Result type:', result.type);
+      console.log('🔗 Result URL:', result.url || 'N/A');
+      console.log('======================================\n');
+
+      if (result.type === 'success' && result.url) {
+        console.log('✅ OAuth exitoso, procesando URL de retorno...');
+        await handleDeepLink({ url: result.url });
       } else if (result.type === 'cancel') {
+        console.log('❌ Usuario canceló el OAuth');
         setLoading(false);
         Alert.alert('Cancelado', 'Autenticación cancelada');
+      } else {
+        console.log('⚠️ Resultado inesperado:', result.type);
+        setLoading(false);
       }
     } catch (error) {
-      console.error('Google login error:', error);
+      console.error('❌ Google login error:', error);
       setLoading(false);
       Alert.alert('Error', 'Error al iniciar sesión con Google');
     }
