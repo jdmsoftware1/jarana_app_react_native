@@ -5,24 +5,21 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from '../theme/colors';
 
 // Employee Screens
-import EmployeeDashboardScreen from '../screens/employee/EmployeeDashboardScreen';
+import CalendarScreen from '../screens/employee/CalendarScreen';
 import CheckInOutScreen from '../screens/employee/CheckInOutScreen';
-import MyRecordsScreen from '../screens/employee/MyRecordsScreen';
+import RequestAbsenceScreen from '../screens/employee/RequestAbsenceScreen';
 import MyScheduleScreen from '../screens/employee/MyScheduleScreen';
-import ProfileScreen from '../screens/employee/ProfileScreen';
-import DocumentsScreen from '../screens/employee/DocumentsScreen';
-import VacationsScreen from '../screens/employee/VacationsScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-// Stack para Dashboard
-const DashboardStack = () => (
+// Stack para Calendario
+const CalendarStack = () => (
   <Stack.Navigator>
     <Stack.Screen 
-      name="Dashboard" 
-      component={EmployeeDashboardScreen}
-      options={{ headerShown: false }}
+      name="Calendar" 
+      component={CalendarScreen}
+      options={{ title: 'Mi Calendario' }}
     />
   </Stack.Navigator>
 );
@@ -38,13 +35,13 @@ const CheckInOutStack = () => (
   </Stack.Navigator>
 );
 
-// Stack para Mis Registros
-const RecordsStack = () => (
+// Stack para Solicitar Ausencia
+const RequestAbsenceStack = () => (
   <Stack.Navigator>
     <Stack.Screen 
-      name="MyRecords" 
-      component={MyRecordsScreen}
-      options={{ title: 'Mis Registros' }}
+      name="RequestAbsence" 
+      component={RequestAbsenceScreen}
+      options={{ title: 'Solicitar Ausencia' }}
     />
   </Stack.Navigator>
 );
@@ -60,39 +57,6 @@ const ScheduleStack = () => (
   </Stack.Navigator>
 );
 
-// Stack para Perfil
-const ProfileStack = () => (
-  <Stack.Navigator>
-    <Stack.Screen 
-      name="Profile" 
-      component={ProfileScreen}
-      options={{ title: 'Perfil' }}
-    />
-  </Stack.Navigator>
-);
-
-// Stack para Documentos
-const DocumentsStack = () => (
-  <Stack.Navigator>
-    <Stack.Screen 
-      name="Documents" 
-      component={DocumentsScreen}
-      options={{ title: 'Documentos' }}
-    />
-  </Stack.Navigator>
-);
-
-// Stack para Vacaciones
-const VacationsStack = () => (
-  <Stack.Navigator>
-    <Stack.Screen 
-      name="Vacations" 
-      component={VacationsScreen}
-      options={{ title: 'Vacaciones' }}
-    />
-  </Stack.Navigator>
-);
-
 const EmployeeNavigator = () => {
   return (
     <Tab.Navigator
@@ -101,20 +65,17 @@ const EmployeeNavigator = () => {
           let iconName;
 
           switch (route.name) {
-            case 'DashboardTab':
-              iconName = 'view-dashboard';
+            case 'CalendarTab':
+              iconName = 'calendar-month';
               break;
             case 'CheckInOutTab':
               iconName = 'clock-check';
               break;
-            case 'RecordsTab':
-              iconName = 'clipboard-text';
+            case 'RequestAbsenceTab':
+              iconName = 'calendar-plus';
               break;
-            case 'VacationsTab':
-              iconName = 'calendar-clock';
-              break;
-            case 'ProfileTab':
-              iconName = 'account';
+            case 'ScheduleTab':
+              iconName = 'timetable';
               break;
             default:
               iconName = 'circle';
@@ -134,9 +95,9 @@ const EmployeeNavigator = () => {
       })}
     >
       <Tab.Screen 
-        name="DashboardTab" 
-        component={DashboardStack}
-        options={{ tabBarLabel: 'Inicio' }}
+        name="CalendarTab" 
+        component={CalendarStack}
+        options={{ tabBarLabel: 'Calendario' }}
       />
       <Tab.Screen 
         name="CheckInOutTab" 
@@ -144,19 +105,14 @@ const EmployeeNavigator = () => {
         options={{ tabBarLabel: 'Fichar' }}
       />
       <Tab.Screen 
-        name="RecordsTab" 
-        component={RecordsStack}
-        options={{ tabBarLabel: 'Registros' }}
+        name="RequestAbsenceTab" 
+        component={RequestAbsenceStack}
+        options={{ tabBarLabel: 'Ausencia' }}
       />
       <Tab.Screen 
-        name="VacationsTab" 
-        component={VacationsStack}
-        options={{ tabBarLabel: 'Vacaciones' }}
-      />
-      <Tab.Screen 
-        name="ProfileTab" 
-        component={ProfileStack}
-        options={{ tabBarLabel: 'Perfil' }}
+        name="ScheduleTab" 
+        component={ScheduleStack}
+        options={{ tabBarLabel: 'Horario' }}
       />
     </Tab.Navigator>
   );

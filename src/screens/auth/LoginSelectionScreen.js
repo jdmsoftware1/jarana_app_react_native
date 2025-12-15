@@ -15,8 +15,12 @@ const LoginSelectionScreen = ({ navigation }) => {
       <View style={styles.content}>
         {/* Logo/Header */}
         <View style={styles.header}>
-          <Icon name="clock-check-outline" size={80} color={colors.brandCream} />
-          <Text style={styles.title}>Registro Horario</Text>
+          <Image 
+            source={require('../../../assets/logo_AliadaDigital.jpg')} 
+            style={styles.logo}
+            resizeMode="contain"
+          />
+          <Text style={styles.title}>AliadaDigital</Text>
           <Text style={styles.subtitle}>Sistema de Control de Asistencia</Text>
         </View>
 
@@ -74,7 +78,7 @@ const LoginSelectionScreen = ({ navigation }) => {
         {/* Footer */}
         <View style={styles.footer}>
           <Text style={styles.footerText}>
-            © 2025 Registro Horario
+            © 2025 AliadaDigital
           </Text>
         </View>
       </View>
@@ -94,6 +98,12 @@ const styles = StyleSheet.create({
   header: {
     alignItems: 'center',
     marginTop: spacing.xxl * 2,
+  },
+  logo: {
+    width: 120,
+    height: 120,
+    borderRadius: 60,
+    marginBottom: spacing.md,
   },
   title: {
     fontSize: 32,

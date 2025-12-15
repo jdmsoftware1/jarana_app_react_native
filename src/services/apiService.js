@@ -207,6 +207,18 @@ export const weeklyScheduleService = {
     return response.data;
   },
 
+  // Obtener horario semanal por empleado y semana
+  getByEmployeeWeek: async (employeeId, year, weekNumber) => {
+    const response = await api.get(`/weekly-schedules/employee/${employeeId}/week/${year}/${weekNumber}`);
+    return response.data;
+  },
+
+  // Obtener todos los horarios de un empleado por año
+  getByEmployeeYear: async (employeeId, year) => {
+    const response = await api.get(`/weekly-schedules/employee/${employeeId}/year/${year}`);
+    return response.data;
+  },
+
   // Crear horario semanal
   create: async (scheduleData) => {
     const response = await api.post('/weekly-schedules', scheduleData);
@@ -240,6 +252,12 @@ export const vacationService = {
     return response.data;
   },
 
+  // Obtener vacaciones por empleado
+  getByEmployee: async (employeeId, params = {}) => {
+    const response = await api.get(`/vacations/employee/${employeeId}`, { params });
+    return response.data;
+  },
+
   // Crear solicitud de vacaciones
   create: async (vacationData) => {
     const response = await api.post('/vacations', vacationData);
@@ -254,7 +272,28 @@ export const vacationService = {
 
   // Aprobar/rechazar vacaciones
   updateStatus: async (id, status, notes = '') => {
-    const response = await api.patch(`/vacations/${id}/status`, { status, notes });
+    const response = await api.put(`/vacations/${id}/status`, { status, notes });
+    return response.data;
+  },
+
+  // Eliminar solicitud
+  delete: async (id) => {
+    const response = await api.delete(`/vacations/${id}`);
+    return response.data;
+  },
+};
+
+// ==================== ABSENCE CATEGORIES ====================
+export const absenceCategoryService = {
+  // Obtener categorías activas
+  getActive: async () => {
+    const response = await api.get('/absence-categories/active');
+    return response.data;
+  },
+
+  // Obtener todas las categorías
+  getAll: async () => {
+    const response = await api.get('/absence-categories');
     return response.data;
   },
 };

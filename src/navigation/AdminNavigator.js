@@ -1,11 +1,9 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from '../theme/colors';
-import features from '../config/features';
-import FloatingChatButton from '../components/FloatingChatButton';
 
 // Admin Screens
 import AdminDashboardScreen from '../screens/admin/AdminDashboardScreen';
@@ -15,10 +13,8 @@ import CreateEmployeeScreen from '../screens/admin/CreateEmployeeScreen';
 import EditEmployeeScreen from '../screens/admin/EditEmployeeScreen';
 import RecordsScreen from '../screens/admin/RecordsScreen';
 import SchedulesScreen from '../screens/admin/SchedulesScreen';
+import AbsencesScreen from '../screens/admin/AbsencesScreen';
 import SettingsScreen from '../screens/admin/SettingsScreen';
-import AIChatScreen from '../screens/admin/AIChatScreen';
-import AIInsightsScreen from '../screens/admin/AIInsightsScreen';
-import DocumentsAdminScreen from '../screens/admin/DocumentsAdminScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -82,6 +78,17 @@ const SchedulesStack = () => (
   </Stack.Navigator>
 );
 
+// Stack para Ausencias
+const AbsencesStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen 
+      name="AbsencesMain" 
+      component={AbsencesScreen}
+      options={{ title: 'Ausencias' }}
+    />
+  </Stack.Navigator>
+);
+
 // Stack para Configuración
 const SettingsStack = () => (
   <Stack.Navigator>
@@ -89,39 +96,6 @@ const SettingsStack = () => (
       name="SettingsMain" 
       component={SettingsScreen}
       options={{ title: 'Configuración' }}
-    />
-  </Stack.Navigator>
-);
-
-// Stack para Chat IA
-const AIChatStack = () => (
-  <Stack.Navigator>
-    <Stack.Screen 
-      name="AIChatMain" 
-      component={AIChatScreen}
-      options={{ title: 'Chat IA' }}
-    />
-  </Stack.Navigator>
-);
-
-// Stack para Insights IA
-const AIInsightsStack = () => (
-  <Stack.Navigator>
-    <Stack.Screen 
-      name="AIInsightsMain" 
-      component={AIInsightsScreen}
-      options={{ title: 'Insights IA' }}
-    />
-  </Stack.Navigator>
-);
-
-// Stack para Documentos
-const DocumentsStack = () => (
-  <Stack.Navigator>
-    <Stack.Screen 
-      name="DocumentsMain" 
-      component={DocumentsAdminScreen}
-      options={{ title: 'Documentos' }}
     />
   </Stack.Navigator>
 );
@@ -147,14 +121,8 @@ const AdminNavigator = () => {
               case 'SchedulesTab':
                 iconName = 'calendar-clock';
                 break;
-              case 'DocumentsTab':
-                iconName = 'file-document-multiple';
-                break;
-              case 'AIChatTab':
-                iconName = 'robot';
-                break;
-              case 'AIInsightsTab':
-                iconName = 'lightbulb-on';
+              case 'AbsencesTab':
+                iconName = 'calendar-remove';
                 break;
               case 'SettingsTab':
                 iconName = 'cog';
@@ -197,24 +165,16 @@ const AdminNavigator = () => {
         options={{ tabBarLabel: 'Horarios' }}
       />
       <Tab.Screen 
-        name="DocumentsTab" 
-        component={DocumentsStack}
-        options={{ tabBarLabel: 'Docs' }}
+        name="AbsencesTab" 
+        component={AbsencesStack}
+        options={{ tabBarLabel: 'Ausencias' }}
       />
-      {features.aiUtils && (
-        <Tab.Screen 
-          name="AIInsightsTab" 
-          component={AIInsightsStack}
-          options={{ tabBarLabel: 'Insights' }}
-        />
-      )}
       <Tab.Screen 
         name="SettingsTab" 
         component={SettingsStack}
         options={{ tabBarLabel: 'Ajustes' }}
       />
     </Tab.Navigator>
-    <FloatingChatButton />
     </View>
   );
 };

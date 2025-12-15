@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "Registro Horario",
-    "slug": "registro-horario-mobile",
+    "name": "AliadaDigital",
+    "slug": "aliada-digital-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -9,7 +9,7 @@
     "splash": {
       "image": "./assets/splash.png",
       "resizeMode": "contain",
-      "backgroundColor": "#ffffff"
+      "backgroundColor": "#1B3A4B"
     },
     "assetBundlePatterns": [
       "**/*"
@@ -21,9 +21,10 @@
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "backgroundColor": "#1B3A4B"
       },
       "package": "com.registrohorario.mobile",
+      "versionCode": 1,
       "permissions": [
         "CAMERA",
         "READ_EXTERNAL_STORAGE",
@@ -34,6 +35,12 @@
       "favicon": "./assets/favicon.png"
     },
     "scheme": "registrohorario",
+    "owner": "jdmsoftware1",
+    "extra": {
+      "eas": {
+        "projectId": "your-project-id"
+      }
+    },
     "plugins": [
       [
         "expo-camera",
@@ -41,6 +48,12 @@
           "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera"
         }
       ]
-    ]
+    ],
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/your-project-id"
+    }
   }
 }

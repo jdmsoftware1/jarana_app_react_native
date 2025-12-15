@@ -26,11 +26,81 @@ const RecordsScreen = () => {
     applyFilters();
   }, [records, filter, searchQuery]);
 
+  // Combinar registros de checkin/checkout en pares
+  const combineRecords = (rawRecords) => {
+    // Agrupar por empleado y día
+    const grouped = {};
+    
+    rawRecords.forEach(record => {
+      const employeeId = record.employeeId;
+      const date = new Date(record.timestamp).toDateString();
+      const key = `${employeeId}-${date}`;
+      
+      if (!grouped[key]) {
+        grouped[key] = {
+          employee: record.employee,
+          date: date,
+          checkins: [],
+          checkouts: []
+        };
+      }
+      
+      if (record.type === 'checkin') {
+        grouped[key].checkins.push(record);
+      } else {
+        grouped[key].checkouts.push(record);
+      }
+    });
+    
+    // Crear registros combinados
+    const combined = [];
+    Object.values(grouped).forEach(group => {
+      // Ordenar por timestamp
+      group.checkins.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+      group.checkouts.sort((a, b) => new Date(a.timestamp) - new Date(b.timestamp));
+      
+      // Emparejar checkins con checkouts
+      const maxPairs = Math.max(group.checkins.length, group.checkouts.length);
+      for (let i = 0; i < maxPairs; i++) {
+        const checkin = group.checkins[i];
+        const checkout = group.checkouts[i];
+        
+        if (checkin || checkout) {
+          const checkInTime = checkin?.timestamp;
+          const checkOutTime = checkout?.timestamp;
+          
+          let totalHours = null;
+          if (checkInTime && checkOutTime) {
+            const diff = new Date(checkOutTime) - new Date(checkInTime);
+            totalHours = diff / (1000 * 60 * 60);
+          }
+          
+          combined.push({
+            id: checkin?.id || checkout?.id,
+            employee: group.employee,
+            checkIn: checkInTime,
+            checkOut: checkOutTime,
+            totalHours: totalHours,
+            notes: checkin?.notes || checkout?.notes,
+            device: checkin?.device || checkout?.device
+          });
+        }
+      }
+    });
+    
+    // Ordenar por fecha más reciente
+    combined.sort((a, b) => new Date(b.checkIn || b.checkOut) - new Date(a.checkIn || a.checkOut));
+    
+    return combined;
+  };
+
   const fetchRecords = async () => {
     try {
       setLoading(true);
       const data = await recordService.getAllRecords();
-      setRecords(data.records || data);
+      const rawRecords = data.records || data || [];
+      const combinedRecords = combineRecords(rawRecords);
+      setRecords(combinedRecords);
     } catch (error) {
       console.error('Error fetching records:', error);
       Alert.alert('Error', 'No se pudieron cargar los registros');
@@ -46,18 +116,18 @@ const RecordsScreen = () => {
     const now = new Date();
     if (filter === 'today') {
       const today = now.toDateString();
-      filtered = filtered.filter(r => new Date(r.checkIn).toDateString() === today);
+      filtered = filtered.filter(r => new Date(r.checkIn || r.checkOut).toDateString() === today);
     } else if (filter === 'week') {
       const weekAgo = new Date(now.getTime() - 7 * 24 * 60 * 60 * 1000);
-      filtered = filtered.filter(r => new Date(r.checkIn) >= weekAgo);
+      filtered = filtered.filter(r => new Date(r.checkIn || r.checkOut) >= weekAgo);
     } else if (filter === 'incomplete') {
       filtered = filtered.filter(r => !r.checkOut);
     }
 
     if (searchQuery) {
       filtered = filtered.filter(r =>
-        r.Employee?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        r.Employee?.employeeCode?.toLowerCase().includes(searchQuery.toLowerCase())
+        r.employee?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        r.employee?.employeeCode?.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
 
@@ -130,9 +200,9 @@ const RecordsScreen = () => {
               <View style={styles.recordHeader}>
                 <View style={styles.employeeInfo}>
                   <Icon name="account" size={18} color={colors.brandLight} />
-                  <Text style={styles.employeeName}>{record.Employee?.name || 'N/A'}</Text>
+                  <Text style={styles.employeeName}>{record.employee?.name || 'Sin nombre'}</Text>
                 </View>
-                <Text style={styles.recordDate}>{formatDate(record.checkIn)}</Text>
+                <Text style={styles.recordDate}>{formatDate(record.checkIn || record.checkOut)}</Text>
               </View>
 
               <View style={styles.recordTimes}>
