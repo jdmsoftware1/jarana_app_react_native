@@ -24,15 +24,17 @@ const MyScheduleScreen = () => {
   const fetchSchedule = async () => {
     try {
       setLoading(true);
+      console.log('🔄 Fetching schedule...');
       const data = await scheduleService.getMySchedule();
+      console.log('✅ Schedule data received:', JSON.stringify(data, null, 2));
       setSchedule(data);
     } catch (error) {
       // Si es 404, significa que no tiene horario asignado (no es un error)
       if (error.response?.status === 404) {
-        console.log('No hay horario asignado para este empleado');
+        console.log('ℹ️ No hay horario asignado para este empleado (404)');
         setSchedule(null);
       } else {
-        console.error('Error fetching schedule:', error);
+        console.error('❌ Error fetching schedule:', error.message, error.response?.data);
         Alert.alert('Error', 'No se pudo cargar el horario');
       }
     } finally {
@@ -55,11 +57,9 @@ const MyScheduleScreen = () => {
     );
   }
 
-  // Ordenar días (Lunes=1 primero, Domingo=0 último)
+  // Ordenar días (Backend: 0=Lunes, 1=Martes, ..., 6=Domingo)
   const sortedDays = [...schedule.scheduleDays].sort((a, b) => {
-    const orderA = a.dayOfWeek === 0 ? 7 : a.dayOfWeek;
-    const orderB = b.dayOfWeek === 0 ? 7 : b.dayOfWeek;
-    return orderA - orderB;
+    return a.dayOfWeek - b.dayOfWeek;
   });
 
   return (
@@ -75,7 +75,8 @@ const MyScheduleScreen = () => {
       </View>
 
       {sortedDays.map((day) => {
-        const dayName = daysOfWeek[day.dayOfWeek === 0 ? 6 : day.dayOfWeek - 1];
+        // Backend: 0=Lunes, 1=Martes, ..., 6=Domingo
+        const dayName = daysOfWeek[day.dayOfWeek];
         
         return (
           <Card key={day.id} style={styles.dayCard}>

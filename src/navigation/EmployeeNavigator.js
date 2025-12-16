@@ -11,6 +11,7 @@ import CalendarScreen from '../screens/employee/CalendarScreen';
 import CheckInOutScreen from '../screens/employee/CheckInOutScreen';
 import RequestAbsenceScreen from '../screens/employee/RequestAbsenceScreen';
 import MyScheduleScreen from '../screens/employee/MyScheduleScreen';
+import DocumentsScreen from '../screens/employee/DocumentsScreen';
 import ProfileScreen from '../screens/employee/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
@@ -60,6 +61,17 @@ const ScheduleStack = () => (
   </Stack.Navigator>
 );
 
+// Stack para Documentos
+const DocumentsStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen 
+      name="Documents" 
+      component={DocumentsScreen}
+      options={{ title: 'Documentos' }}
+    />
+  </Stack.Navigator>
+);
+
 // Stack para Perfil
 const ProfileStack = () => (
   <Stack.Navigator>
@@ -92,6 +104,9 @@ const EmployeeNavigator = () => {
               break;
             case 'ScheduleTab':
               iconName = 'timetable';
+              break;
+            case 'DocumentsTab':
+              iconName = 'file-document-multiple';
               break;
             case 'ProfileTab':
               iconName = 'account-circle';
@@ -132,6 +147,11 @@ const EmployeeNavigator = () => {
         name="ScheduleTab" 
         component={ScheduleStack}
         options={{ tabBarLabel: 'Horario' }}
+      />
+      <Tab.Screen 
+        name="DocumentsTab" 
+        component={DocumentsStack}
+        options={{ tabBarLabel: 'Docs' }}
       />
       <Tab.Screen 
         name="ProfileTab" 

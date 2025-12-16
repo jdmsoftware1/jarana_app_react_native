@@ -53,10 +53,26 @@ export const AuthProvider = ({ children }) => {
         // Verificar que el token siga siendo válido
         try {
           const response = await authService.verifyToken();
-          setUser(JSON.parse(userData));
+          const savedUser = JSON.parse(userData);
+          
+          // Refrescar el rol desde el tenant (sin cache)
+          console.log('🔄 Refrescando rol del tenant para:', savedUser.email);
+          await tenantService.clearTenantCache(savedUser.email);
+          const tenantConfig = await tenantService.getTenantConfig(savedUser.email);
+          const freshRole = (tenantConfig.role || savedUser.role).toLowerCase();
+          
+          const userWithFreshRole = {
+            ...savedUser,
+            role: freshRole,
+          };
+          
+          console.log('👤 Usuario restaurado con rol:', freshRole);
+          await AsyncStorage.setItem('user', JSON.stringify(userWithFreshRole));
+          setUser(userWithFreshRole);
           setIsAuthenticated(true);
         } catch (error) {
           // Token inválido, limpiar
+          console.log('❌ Token inválido, limpiando sesión');
           await logout();
         }
       }
@@ -104,10 +120,14 @@ export const AuthProvider = ({ children }) => {
       const response = await authService.verifyToken();
       const employee = response.employee;
       
+      // Limpiar cache del tenant antes de consultar (para obtener rol actualizado)
+      console.log('🧹 Limpiando cache del tenant para:', employee.email);
+      await tenantService.clearTenantCache(employee.email);
+      
       // Consultar el rol desde la tabla tenants en Neon
       console.log('🔍 Consultando rol del tenant para:', employee.email);
       const tenantConfig = await tenantService.getTenantConfig(employee.email);
-      console.log('📋 Tenant config:', tenantConfig);
+      console.log('📋 Tenant config recibido:', JSON.stringify(tenantConfig));
       
       // Sobrescribir el rol del backend con el rol del tenant (normalizar a minúsculas)
       const tenantRole = (tenantConfig.role || employee.role).toLowerCase();
@@ -155,15 +175,18 @@ export const AuthProvider = ({ children }) => {
     }
   };
 
-  const isAdmin = () => {
-    return user?.role === 'admin';
+  const checkIsAdmin = () => {
+    const role = user?.role?.toLowerCase();
+    const isAdminRole = role === 'admin';
+    console.log('🔐 Checking isAdmin - original role:', user?.role, '| normalized:', role, '| isAdmin:', isAdminRole);
+    return isAdminRole;
   };
 
   const value = {
     user,
     loading,
     isAuthenticated,
-    isAdmin: isAdmin(),
+    isAdmin: checkIsAdmin(),
     login,
     logout,
     updateUser,

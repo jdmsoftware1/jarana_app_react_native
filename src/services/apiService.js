@@ -153,38 +153,54 @@ export const scheduleService = {
     const user = JSON.parse(userStr);
     const employeeId = user.id;
     
-    // Calcular semana y año actual
+    // Calcular semana ISO y año actual (ISO 8601 - semana empieza en lunes)
     const now = new Date();
     const year = now.getFullYear();
-    const startOfYear = new Date(year, 0, 1);
-    const days = Math.floor((now - startOfYear) / (24 * 60 * 60 * 1000));
-    const weekNumber = Math.ceil((days + startOfYear.getDay() + 1) / 7);
+    
+    // Calcular número de semana ISO
+    const tempDate = new Date(now.getTime());
+    tempDate.setHours(0, 0, 0, 0);
+    // Jueves de la semana actual determina el año de la semana
+    tempDate.setDate(tempDate.getDate() + 3 - (tempDate.getDay() + 6) % 7);
+    // Semana 1 es la semana con el primer jueves de enero
+    const week1 = new Date(tempDate.getFullYear(), 0, 4);
+    const weekNumber = 1 + Math.round(((tempDate.getTime() - week1.getTime()) / 86400000 - 3 + (week1.getDay() + 6) % 7) / 7);
+    
+    console.log(`📅 Fetching schedule for employee ${employeeId}, year ${year}, week ${weekNumber}`);
     
     // Obtener horario de la semana actual
     const response = await api.get(`/weekly-schedules/employee/${employeeId}/week/${year}/${weekNumber}`);
     
+    console.log('📅 Schedule response:', JSON.stringify(response.data, null, 2));
+    
+    // El backend devuelve { data: { weeklySchedule, dailyExceptions, weekDates } }
+    const responseData = response.data?.data || response.data;
+    const weeklySchedule = responseData?.weeklySchedule || responseData;
+    
     // Transformar la respuesta al formato esperado por MyScheduleScreen
-    const schedule = response.data;
-    if (schedule && schedule.template && schedule.template.templateDays) {
+    if (weeklySchedule && weeklySchedule.template && weeklySchedule.template.templateDays) {
       return {
-        templateName: schedule.template.name,
-        scheduleDays: schedule.template.templateDays.map(day => ({
+        templateName: weeklySchedule.template.name,
+        weekNumber: weeklySchedule.weekNumber,
+        year: weeklySchedule.year,
+        scheduleDays: weeklySchedule.template.templateDays.map(day => ({
           id: day.id,
-          dayOfWeek: day.dayOfWeek,
-          isWorkingDay: day.isWorkingDay,
-          isSplitSchedule: day.isSplitSchedule,
-          startTime: day.startTime,
-          endTime: day.endTime,
-          morningStart: day.morningStart,
-          morningEnd: day.morningEnd,
-          afternoonStart: day.afternoonStart,
-          afternoonEnd: day.afternoonEnd,
+          dayOfWeek: day.dayOfWeek || day.day_of_week,
+          isWorkingDay: day.isWorkingDay ?? day.is_working_day ?? true,
+          isSplitSchedule: day.isSplitSchedule ?? day.is_split_schedule ?? false,
+          startTime: day.startTime || day.start_time,
+          endTime: day.endTime || day.end_time,
+          morningStart: day.morningStart || day.morning_start,
+          morningEnd: day.morningEnd || day.morning_end,
+          afternoonStart: day.afternoonStart || day.afternoon_start,
+          afternoonEnd: day.afternoonEnd || day.afternoon_end,
           breaks: day.breaks || [],
           notes: day.notes,
         })),
       };
     }
     
+    console.log('⚠️ No schedule found or invalid format');
     return null;
   },
 
