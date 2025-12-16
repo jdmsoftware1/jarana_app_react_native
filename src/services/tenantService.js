@@ -1,8 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { EXPO_PUBLIC_API_URL, EXPO_PUBLIC_ENVIRONMENT } from '@env';
 
 // URL base del backend (para consultar tenants)
-const TENANT_API_URL = EXPO_PUBLIC_API_URL || 'https://jarana-horas-back.onrender.com/api';
+const TENANT_API_URL = process.env.EXPO_PUBLIC_API_URL || 'https://jarana-horas-back.onrender.com/api';
+const EXPO_PUBLIC_ENVIRONMENT = process.env.EXPO_PUBLIC_ENVIRONMENT || 'PRO';
 
 // APIs por defecto
 const DEV_API_URL = 'http://192.168.1.100:3000/api';

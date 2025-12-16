@@ -232,7 +232,13 @@ const CheckInOutScreen = () => {
             <View style={styles.recordRow}>
               <Text style={styles.recordLabel}>Fecha:</Text>
               <Text style={styles.recordValue}>
-                {new Date(lastRecord.checkIn).toLocaleDateString('es-ES')}
+                {lastRecord.checkIn || lastRecord.timestamp
+                  ? new Date(lastRecord.checkIn || lastRecord.timestamp).toLocaleDateString('es-ES', {
+                      day: '2-digit',
+                      month: '2-digit',
+                      year: 'numeric'
+                    })
+                  : 'Sin fecha'}
               </Text>
             </View>
             <View style={styles.recordRow}>

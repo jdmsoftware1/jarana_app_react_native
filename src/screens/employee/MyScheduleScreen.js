@@ -27,8 +27,14 @@ const MyScheduleScreen = () => {
       const data = await scheduleService.getMySchedule();
       setSchedule(data);
     } catch (error) {
-      console.error('Error fetching schedule:', error);
-      Alert.alert('Error', 'No se pudo cargar el horario');
+      // Si es 404, significa que no tiene horario asignado (no es un error)
+      if (error.response?.status === 404) {
+        console.log('No hay horario asignado para este empleado');
+        setSchedule(null);
+      } else {
+        console.error('Error fetching schedule:', error);
+        Alert.alert('Error', 'No se pudo cargar el horario');
+      }
     } finally {
       setLoading(false);
       setRefreshing(false);

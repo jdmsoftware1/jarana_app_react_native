@@ -1,6 +1,7 @@
 import React, { createContext, useState, useContext, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { authService } from '../services/apiService';
+import { tenantService } from '../services/tenantService';
 
 const AuthContext = createContext({});
 
@@ -101,8 +102,26 @@ export const AuthProvider = ({ children }) => {
       await AsyncStorage.setItem('token', token);
       // Verificar el token y obtener datos del usuario
       const response = await authService.verifyToken();
-      await AsyncStorage.setItem('user', JSON.stringify(response.employee));
-      setUser(response.employee);
+      const employee = response.employee;
+      
+      // Consultar el rol desde la tabla tenants en Neon
+      console.log('🔍 Consultando rol del tenant para:', employee.email);
+      const tenantConfig = await tenantService.getTenantConfig(employee.email);
+      console.log('📋 Tenant config:', tenantConfig);
+      
+      // Sobrescribir el rol del backend con el rol del tenant (normalizar a minúsculas)
+      const tenantRole = (tenantConfig.role || employee.role).toLowerCase();
+      const userWithTenantRole = {
+        ...employee,
+        role: tenantRole,
+        enterpriseName: tenantConfig.enterpriseName,
+        theme: tenantConfig.theme,
+      };
+      
+      console.log('👤 Usuario final con rol de tenant:', userWithTenantRole.role);
+      
+      await AsyncStorage.setItem('user', JSON.stringify(userWithTenantRole));
+      setUser(userWithTenantRole);
       setIsAuthenticated(true);
       return { success: true };
     } catch (error) {
@@ -113,8 +132,13 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
+      // Limpiar cache del tenant si hay email
+      if (user?.email) {
+        await tenantService.clearTenantCache(user.email);
+      }
       await AsyncStorage.removeItem('token');
       await AsyncStorage.removeItem('user');
+      await AsyncStorage.removeItem('currentApiUrl');
       setUser(null);
       setIsAuthenticated(false);
     } catch (error) {

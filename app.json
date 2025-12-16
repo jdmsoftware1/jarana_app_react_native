@@ -28,7 +28,9 @@
       "permissions": [
         "CAMERA",
         "READ_EXTERNAL_STORAGE",
-        "WRITE_EXTERNAL_STORAGE"
+        "WRITE_EXTERNAL_STORAGE",
+        "android.permission.CAMERA",
+        "android.permission.RECORD_AUDIO"
       ]
     },
     "web": {
@@ -38,7 +40,7 @@
     "owner": "jdmsoftware1",
     "extra": {
       "eas": {
-        "projectId": "your-project-id"
+        "projectId": "1a1c4754-cb66-417b-970f-59ac0531b54a"
       }
     },
     "plugins": [
@@ -53,7 +55,7 @@
       "policy": "appVersion"
     },
     "updates": {
-      "url": "https://u.expo.dev/your-project-id"
+      "url": "https://u.expo.dev"
     }
   }
 }
