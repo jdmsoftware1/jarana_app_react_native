@@ -89,6 +89,9 @@ const EmployeeNavigator = () => {
             case 'ScheduleTab':
               iconName = 'timetable';
               break;
+            case 'ProfileTab':
+              iconName = 'account-circle';
+              break;
             default:
               iconName = 'circle';
           }
@@ -125,6 +128,11 @@ const EmployeeNavigator = () => {
         name="ScheduleTab" 
         component={ScheduleStack}
         options={{ tabBarLabel: 'Horario' }}
+      />
+      <Tab.Screen 
+        name="ProfileTab" 
+        component={ProfileStack}
+        options={{ tabBarLabel: 'Perfil' }}
       />
     </Tab.Navigator>
   );
