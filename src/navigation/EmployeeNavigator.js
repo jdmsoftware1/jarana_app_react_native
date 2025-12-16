@@ -9,6 +9,7 @@ import CalendarScreen from '../screens/employee/CalendarScreen';
 import CheckInOutScreen from '../screens/employee/CheckInOutScreen';
 import RequestAbsenceScreen from '../screens/employee/RequestAbsenceScreen';
 import MyScheduleScreen from '../screens/employee/MyScheduleScreen';
+import ProfileScreen from '../screens/employee/ProfileScreen';
 
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
@@ -53,6 +54,17 @@ const ScheduleStack = () => (
       name="MySchedule" 
       component={MyScheduleScreen}
       options={{ title: 'Mi Horario' }}
+    />
+  </Stack.Navigator>
+);
+
+// Stack para Perfil
+const ProfileStack = () => (
+  <Stack.Navigator>
+    <Stack.Screen 
+      name="Profile" 
+      component={ProfileScreen}
+      options={{ title: 'Mi Perfil' }}
     />
   </Stack.Navigator>
 );
