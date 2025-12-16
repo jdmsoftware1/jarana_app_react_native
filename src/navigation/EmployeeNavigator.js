@@ -72,6 +72,8 @@ const ProfileStack = () => (
 );
 
 const EmployeeNavigator = () => {
+  const insets = useSafeAreaInsets();
+  
   return (
     <Tab.Navigator
       screenOptions={({ route }) => ({
@@ -105,8 +107,8 @@ const EmployeeNavigator = () => {
         tabBarStyle: {
           backgroundColor: colors.white,
           borderTopColor: colors.border,
-          paddingBottom: 5,
-          height: 60,
+          paddingBottom: Platform.OS === 'android' ? Math.max(insets.bottom, 10) : 5,
+          height: Platform.OS === 'android' ? 60 + Math.max(insets.bottom, 10) : 60,
         },
         headerShown: false,
       })}

@@ -1,7 +1,8 @@
 import React from 'react';
-import { View } from 'react-native';
+import { View, Platform } from 'react-native';
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
 import { createStackNavigator } from '@react-navigation/stack';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import colors from '../theme/colors';
 
@@ -101,6 +102,8 @@ const SettingsStack = () => (
 );
 
 const AdminNavigator = () => {
+  const insets = useSafeAreaInsets();
+  
   return (
     <View style={{ flex: 1 }}>
       <Tab.Navigator
@@ -138,8 +141,8 @@ const AdminNavigator = () => {
           tabBarStyle: {
             backgroundColor: colors.white,
             borderTopColor: colors.border,
-            paddingBottom: 5,
-            height: 60,
+            paddingBottom: Platform.OS === 'android' ? Math.max(insets.bottom, 10) : 5,
+            height: Platform.OS === 'android' ? 60 + Math.max(insets.bottom, 10) : 60,
           },
           headerShown: false,
         })}
