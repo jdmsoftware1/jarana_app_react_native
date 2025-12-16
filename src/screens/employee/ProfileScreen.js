@@ -73,7 +73,13 @@ const ProfileScreen = () => {
           <Icon name="calendar-plus" size={20} color={colors.brandLight} />
           <Text style={styles.infoLabel}>Fecha de Alta:</Text>
           <Text style={styles.infoValue}>
-            {user?.createdAt ? new Date(user.createdAt).toLocaleDateString('es-ES') : 'N/A'}
+            {user?.createdAt || user?.created_at 
+              ? new Date(user.createdAt || user.created_at).toLocaleDateString('es-ES', {
+                  day: '2-digit',
+                  month: '2-digit', 
+                  year: 'numeric'
+                })
+              : 'No disponible'}
           </Text>
         </View>
       </Card>

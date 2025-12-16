@@ -144,15 +144,53 @@ export const recordService = {
 
 // ==================== SCHEDULES ====================
 export const scheduleService = {
-  // Obtener horario del empleado
+  // Obtener horario del empleado (semana actual)
   getMySchedule: async () => {
-    const response = await api.get('/schedules/my-schedule');
-    return response.data;
+    // Obtener el usuario guardado para obtener el employeeId
+    const userStr = await AsyncStorage.getItem('user');
+    if (!userStr) throw new Error('No user found');
+    
+    const user = JSON.parse(userStr);
+    const employeeId = user.id;
+    
+    // Calcular semana y año actual
+    const now = new Date();
+    const year = now.getFullYear();
+    const startOfYear = new Date(year, 0, 1);
+    const days = Math.floor((now - startOfYear) / (24 * 60 * 60 * 1000));
+    const weekNumber = Math.ceil((days + startOfYear.getDay() + 1) / 7);
+    
+    // Obtener horario de la semana actual
+    const response = await api.get(`/weekly-schedules/employee/${employeeId}/week/${year}/${weekNumber}`);
+    
+    // Transformar la respuesta al formato esperado por MyScheduleScreen
+    const schedule = response.data;
+    if (schedule && schedule.template && schedule.template.templateDays) {
+      return {
+        templateName: schedule.template.name,
+        scheduleDays: schedule.template.templateDays.map(day => ({
+          id: day.id,
+          dayOfWeek: day.dayOfWeek,
+          isWorkingDay: day.isWorkingDay,
+          isSplitSchedule: day.isSplitSchedule,
+          startTime: day.startTime,
+          endTime: day.endTime,
+          morningStart: day.morningStart,
+          morningEnd: day.morningEnd,
+          afternoonStart: day.afternoonStart,
+          afternoonEnd: day.afternoonEnd,
+          breaks: day.breaks || [],
+          notes: day.notes,
+        })),
+      };
+    }
+    
+    return null;
   },
 
   // Obtener horario por empleado
   getEmployeeSchedule: async (employeeId) => {
-    const response = await api.get(`/schedules/employee/${employeeId}`);
+    const response = await api.get(`/weekly-schedules/employee/${employeeId}`);
     return response.data;
   },
 
