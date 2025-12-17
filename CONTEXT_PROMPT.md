@@ -79,6 +79,46 @@ CREATE TABLE tenants (
 
 ---
 
+## 🔔 Sistema de Notificaciones Push
+
+### Tecnología
+- **Firebase Cloud Messaging (FCM)** - Gratuito, funciona en Android e iOS
+- **expo-notifications** - Integración con Expo
+
+### Tipos de notificaciones
+| Tipo | Trigger | Mensaje |
+|------|---------|---------|
+| `check_in_reminder` | Cron job (2 min después de hora entrada) | "⏰ ¡No olvides fichar!" |
+| `schedule_assigned` | Admin asigna horario | "📅 Nuevo horario asignado" |
+| `document_pending` | Admin sube documento | "📄 Nuevo documento disponible" |
+| `absence_status` | Admin aprueba/rechaza ausencia | "✅ Solicitud aprobada" |
+| `shift_ending` | 5 min antes de fin de turno | "🔔 Tu turno termina pronto" |
+
+### Endpoints de notificaciones
+```
+POST /api/notifications/register-token    # Registrar token FCM
+POST /api/notifications/unregister-token  # Desactivar token (logout)
+GET  /api/notifications                   # Obtener notificaciones
+GET  /api/notifications/unread-count      # Contar no leídas
+PUT  /api/notifications/:id/read          # Marcar como leída
+PUT  /api/notifications/read-all          # Marcar todas como leídas
+POST /api/notifications/send              # Enviar notificación (admin)
+POST /api/notifications/send-bulk         # Enviar a múltiples (admin)
+```
+
+### Archivos relevantes
+- `src/services/notificationService.js` - Cliente de notificaciones (app)
+- Backend: `src/services/notificationService.js` - Lógica FCM
+- Backend: `src/routes/notifications.js` - Endpoints API
+- Backend: `src/models/PushToken.js` - Modelo de tokens
+- Backend: `src/models/Notification.js` - Historial de notificaciones
+
+### Configuración requerida
+- **Render (backend):** Variable `FIREBASE_SERVICE_ACCOUNT` con JSON del Service Account
+- **App:** Plugin `expo-notifications` en `app.json`
+
+---
+
 ## 🗄️ Endpoints Backend Relevantes
 
 ### Autenticación

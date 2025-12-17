@@ -33,6 +33,17 @@
 - [x] Safe area insets para evitar solapamiento con botones de navegación Android
 - [x] Ajuste de `tabBarStyle` con `paddingBottom` y `height` dinámicos
 
+#### Sistema de Notificaciones Push (Firebase Cloud Messaging)
+- [x] Integración con Firebase Admin SDK en backend
+- [x] Modelo `PushToken` para almacenar tokens de dispositivos
+- [x] Modelo `Notification` para historial de notificaciones
+- [x] Servicio `notificationService` en backend y app móvil
+- [x] Registro automático de token en login, desregistro en logout
+- [x] Triggers automáticos:
+  - 📅 Nuevo horario asignado (cuando admin asigna plantilla)
+  - 📄 Nuevo documento disponible (cuando admin sube documento)
+  - ✅/❌ Ausencia aprobada/rechazada (cuando admin cambia estado)
+
 ---
 
 ## 🔄 Actualización v1.2.0 - Diciembre 2025
