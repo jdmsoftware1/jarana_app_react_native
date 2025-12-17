@@ -30,13 +30,15 @@ Aplicación móvil React Native (Expo) para el sistema de registro horario de em
 
 ## 📱 Estructura de Navegación
 
-### Empleado (EmployeeNavigator) - 4 Tabs
+### Empleado (EmployeeNavigator) - 6 Tabs
 | Tab | Pantalla | Descripción | Endpoint Backend |
 |-----|----------|-------------|------------------|
-| **Calendario** | CalendarScreen | Ver días libres, vacaciones, ausencias aprobadas | `GET /vacations/employee/:id` |
-| **Fichar** | CheckInOutScreen | Entrada/salida con un toque | `POST /records/checkin`, `POST /records/checkout` |
-| **Solicitar Ausencia** | RequestAbsenceScreen | Solicitar vacaciones, bajas médicas, etc. | `POST /vacations`, `GET /absence-categories/active` |
-| **Horario** | MyScheduleScreen | Ver horario semanal asignado | `GET /weekly-schedules/employee/:id/week/:year/:week` |
+| **Calendario** | CalendarScreen | Ver horarios y ausencias. Al pulsar día muestra horario | `GET /weekly-schedules/employee/:id/year/:year`, `GET /vacations/employee/:id` |
+| **Fichar** | CheckInOutScreen | Entrada/salida con formato fecha dd/mm/AAAA | `POST /records/checkin`, `POST /records/checkout` |
+| **Ausencia** | RequestAbsenceScreen | Solicitar vacaciones, bajas médicas, etc. | `POST /vacations`, `GET /absence-categories/active` |
+| **Horario** | MyScheduleScreen | Ver horario semanal (semana ISO 8601) | `GET /weekly-schedules/employee/:id/week/:year/:week` |
+| **Docs** | DocumentsScreen | Descargar nóminas/contratos, subir documentos | `GET /documents/my-documents`, `POST /documents/upload` |
+| **Perfil** | ProfileScreen | Info usuario, fecha alta, cerrar sesión | - |
 
 ### Admin (AdminNavigator) - 5 Tabs
 | Tab | Pantalla | Descripción |
@@ -44,10 +46,36 @@ Aplicación móvil React Native (Expo) para el sistema de registro horario de em
 | **Dashboard** | AdminDashboardScreen | Métricas y resumen general |
 | **Empleados** | EmployeesScreen | CRUD de empleados |
 | **Registros** | RecordsScreen | Ver todos los fichajes |
-| **Horarios** | SchedulesScreen | Gestión de horarios semanales (filtro por semana) |
+| **Horarios** | SchedulesScreen | Gestión de horarios semanales (filtro por semana, horarios partidos) |
 | **Ausencias** | AbsencesScreen | Ver/aprobar vacaciones y bajas de empleados |
 
 > ⚠️ **NO incluir Insight IA en la app móvil**
+
+---
+
+## 🔧 Configuración Multi-tenant
+
+### Tabla `tenants` en Neon PostgreSQL
+```sql
+CREATE TABLE tenants (
+  email VARCHAR(255) PRIMARY KEY,
+  role VARCHAR(50),           -- 'Admin' o 'Employee'
+  enterprise_name VARCHAR(255),
+  api_url VARCHAR(255),
+  theme VARCHAR(50)
+);
+```
+
+### Flujo de autenticación
+1. Usuario hace login con Google OAuth
+2. Backend devuelve token JWT
+3. App consulta `/api/tenant?email=...` para obtener rol del tenant
+4. Rol se normaliza a minúsculas (`Admin` → `admin`)
+5. Se muestra AdminNavigator o EmployeeNavigator según rol
+
+### Archivos relevantes
+- `src/services/tenantService.js` - Consulta y cache de tenant
+- `src/context/AuthContext.js` - Gestión de autenticación y rol
 
 ---
 
@@ -207,23 +235,31 @@ EXPO_PUBLIC_ENABLE_2FA=true
 
 ## 📝 Notas Importantes
 
-1. **Horarios semanales:** Los empleados tienen horarios asignados por semana (año + número de semana). El admin debe poder filtrar por semana.
+1. **Horarios semanales:** 
+   - Backend usa `dayOfWeek`: 0=Lunes, 1=Martes, ..., 6=Domingo
+   - Cálculo de semana ISO 8601 (semana empieza en lunes)
+   - Soporta horarios partidos (`isSplitSchedule`): mañana y tarde
+   - Campos pueden venir en snake_case o camelCase
 
 2. **Ausencias:** Incluyen vacaciones, bajas médicas y otros tipos. Cada tipo tiene una categoría con propiedades como `requiresApproval`, `isPaid`, `maxDaysPerYear`.
 
-3. **Calendario empleado:** Muestra días libres, vacaciones aprobadas y ausencias. No es para gestionar, solo para visualizar.
+3. **Calendario empleado:** Muestra horarios y ausencias. Al pulsar un día con horario asignado, muestra el detalle del horario de ese día.
 
 4. **OAuth móvil:** Usa `Linking.createURL()` para generar la URL de callback correcta según el entorno (Expo Go vs standalone).
 
 5. **Tunnel para desarrollo:** Usar `npx expo start --tunnel` para que el backend de Render pueda redirigir correctamente.
+
+6. **Multi-tenant:** El rol se obtiene de la tabla `tenants` en Neon, no del backend. Se normaliza a minúsculas para comparación.
+
+7. **Android UI:** Usar `useSafeAreaInsets` y `Platform` para ajustar la barra de navegación y evitar solapamiento con botones del sistema.
 
 ---
 
 ## 📅 Última Actualización
 
 **Fecha:** Diciembre 2025  
-**Versión:** 1.1.0  
-**Estado:** OAuth funcionando, pendiente ajustar menús
+**Versión:** 1.3.0  
+**Estado:** Multi-tenant funcionando, 6 tabs empleado, horarios corregidos
 
 ---
 

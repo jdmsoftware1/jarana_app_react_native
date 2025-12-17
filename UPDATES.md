@@ -4,6 +4,37 @@
 
 ---
 
+## 🔄 Actualización v1.3.0 - Diciembre 2025
+
+### ✅ Completado
+
+#### Sistema Multi-tenant
+- [x] Integración con tabla `tenants` en Neon PostgreSQL
+- [x] Rol del usuario se obtiene de Neon (Admin/Employee)
+- [x] Cache de tenant con limpieza automática en cada login
+- [x] URL del tenant service: `https://aliadadigital-back-front.onrender.com/api`
+
+#### Menú Empleado (Ampliado a 6 tabs)
+- [x] **Calendario** - Ver horarios y ausencias. Al pulsar un día muestra el horario de ese día
+- [x] **Fichar** - Entrada/salida con formato fecha español (dd/mm/AAAA)
+- [x] **Ausencia** - Solicitar vacaciones, bajas médicas, etc.
+- [x] **Horario** - Ver horario semanal con plantilla asignada
+- [x] **Docs** - Documentos: descargar nóminas/contratos y subir documentos para aprobación
+- [x] **Perfil** - Info del usuario, fecha de alta y cerrar sesión
+
+#### Correcciones de Horarios
+- [x] Cálculo correcto de semana ISO 8601
+- [x] Mapeo de días: Backend usa 0=Lunes, 1=Martes, ..., 6=Domingo
+- [x] Soporte para campos snake_case y camelCase del backend
+- [x] Visualización correcta de horarios partidos (mañana/tarde)
+- [x] Fallback con index cuando `dayOfWeek` es undefined
+
+#### UI/UX Android
+- [x] Safe area insets para evitar solapamiento con botones de navegación Android
+- [x] Ajuste de `tabBarStyle` con `paddingBottom` y `height` dinámicos
+
+---
+
 ## 🔄 Actualización v1.2.0 - Diciembre 2025
 
 ### ✅ Completado
@@ -15,7 +46,7 @@
 - [x] Redirección correcta desde Render a Expo Go
 - [x] Actualizar SDK de Expo 51 → 54
 
-#### Menú Empleado (Reestructurado a 4 tabs)
+#### Menú Empleado (Base 4 tabs)
 - [x] **Calendario** - `CalendarScreen.js` - Ver días libres, vacaciones y ausencias aprobadas
 - [x] **Fichar** - `CheckInOutScreen.js` - Entrada/salida
 - [x] **Solicitar Ausencia** - `RequestAbsenceScreen.js` - Solicitar vacaciones, bajas médicas, etc.

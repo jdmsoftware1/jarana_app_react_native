@@ -2,6 +2,7 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { authService } from '../services/apiService';
 import { tenantService } from '../services/tenantService';
+import notificationService from '../services/notificationService';
 
 const AuthContext = createContext({});
 
@@ -75,6 +76,9 @@ export const AuthProvider = ({ children }) => {
           await AsyncStorage.setItem('user', JSON.stringify(userWithFreshRole));
           setUser(userWithFreshRole);
           setIsAuthenticated(true);
+          
+          // Registrar token de notificaciones push
+          await notificationService.registerTokenWithBackend();
         } catch (error) {
           // Token inválido, limpiar
           console.log('❌ Token inválido, limpiando sesión');
@@ -148,6 +152,10 @@ export const AuthProvider = ({ children }) => {
       await AsyncStorage.setItem('user', JSON.stringify(userWithTenantRole));
       setUser(userWithTenantRole);
       setIsAuthenticated(true);
+      
+      // Registrar token de notificaciones push después del login
+      await notificationService.registerTokenWithBackend();
+      
       return { success: true };
     } catch (error) {
       console.error('Google callback error:', error);
@@ -157,6 +165,9 @@ export const AuthProvider = ({ children }) => {
 
   const logout = async () => {
     try {
+      // Desregistrar token de notificaciones push
+      await notificationService.unregisterToken();
+      
       // Limpiar cache del tenant si hay email
       if (user?.email) {
         await tenantService.clearTenantCache(user.email);
