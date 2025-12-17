@@ -59,14 +59,19 @@ export const AuthProvider = ({ children }) => {
           console.log('🔄 Refrescando rol del tenant para:', savedUser.email);
           await tenantService.clearTenantCache(savedUser.email);
           const tenantConfig = await tenantService.getTenantConfig(savedUser.email);
-          const freshRole = (tenantConfig.role || savedUser.role).toLowerCase();
+          console.log('📋 TenantConfig completo:', JSON.stringify(tenantConfig));
+          console.log('📋 tenantConfig.role:', tenantConfig.role);
+          console.log('📋 savedUser.role:', savedUser.role);
+          
+          const freshRole = (tenantConfig.role || savedUser.role || 'employee').toLowerCase();
+          console.log('📋 freshRole calculado:', freshRole);
           
           const userWithFreshRole = {
             ...savedUser,
             role: freshRole,
           };
           
-          console.log('👤 Usuario restaurado con rol:', freshRole);
+          console.log('👤 Usuario restaurado con rol FINAL:', userWithFreshRole.role);
           await AsyncStorage.setItem('user', JSON.stringify(userWithFreshRole));
           setUser(userWithFreshRole);
           setIsAuthenticated(true);

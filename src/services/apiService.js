@@ -183,9 +183,10 @@ export const scheduleService = {
         templateName: weeklySchedule.template.name,
         weekNumber: weeklySchedule.weekNumber,
         year: weeklySchedule.year,
-        scheduleDays: weeklySchedule.template.templateDays.map(day => ({
+        scheduleDays: weeklySchedule.template.templateDays.map((day, index) => ({
           id: day.id,
-          dayOfWeek: day.dayOfWeek || day.day_of_week,
+          // Backend: 0=Lunes, 1=Martes, ..., 6=Domingo. Usar index como fallback
+          dayOfWeek: day.dayOfWeek ?? day.day_of_week ?? index,
           isWorkingDay: day.isWorkingDay ?? day.is_working_day ?? true,
           isSplitSchedule: day.isSplitSchedule ?? day.is_split_schedule ?? false,
           startTime: day.startTime || day.start_time,

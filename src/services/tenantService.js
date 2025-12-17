@@ -1,7 +1,8 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 // URL base del backend (para consultar tenants)
-const TENANT_API_URL = process.env.EXPO_PUBLIC_API_URL || 'https://jarana-horas-back.onrender.com/api';
+// IMPORTANTE: Debe apuntar al backend que tiene la ruta /api/tenant y conexión a Neon
+const TENANT_API_URL = 'https://aliadadigital-back-front.onrender.com/api';
 const EXPO_PUBLIC_ENVIRONMENT = process.env.EXPO_PUBLIC_ENVIRONMENT || 'PRO';
 
 // APIs por defecto
@@ -37,21 +38,31 @@ class TenantService {
 
       // Obtener desde el backend (que consulta Neon)
       console.log('🔍 Consultando tenant para:', email);
+      console.log('🌐 URL:', `${TENANT_API_URL}/tenant?email=${encodeURIComponent(email)}`);
       const response = await fetch(`${TENANT_API_URL}/tenant?email=${encodeURIComponent(email)}`);
+      
+      console.log('📡 Response status:', response.status);
       
       if (response.ok) {
         const data = await response.json();
-        console.log('✅ Tenant encontrado:', data);
+        console.log('✅ Tenant response data:', JSON.stringify(data));
+        console.log('✅ data.found:', data.found);
+        console.log('✅ data.config:', JSON.stringify(data.config));
+        console.log('✅ data.config.role:', data.config?.role);
         
         if (data.found && data.config) {
+          console.log('💾 Cacheando y retornando config con rol:', data.config.role);
           await this.cacheTenant(email, data.config);
           return data.config;
         }
         
         // Si no se encontró, usar config por defecto del backend
         if (data.config) {
+          console.log('⚠️ Usuario no encontrado, usando config por defecto con rol:', data.config.role);
           return data.config;
         }
+      } else {
+        console.log('❌ Response no OK:', response.status, response.statusText);
       }
 
       // Fallback por defecto

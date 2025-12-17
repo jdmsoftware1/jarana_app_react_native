@@ -200,27 +200,35 @@ const SchedulesScreen = () => {
                   {weeklySchedule.weeklySchedule.template.name}
                 </Text>
                 
-                {weeklySchedule.weeklySchedule.template.templateDays?.map((day, index) => (
-                  <View key={index} style={styles.dayRow}>
-                    <Text style={styles.dayName}>
-                      {DAYS_OF_WEEK[day.dayOfWeek] || `Día ${day.dayOfWeek}`}
-                    </Text>
-                    {day.isWorkingDay ? (
-                      <View style={styles.daySchedule}>
-                        <Text style={styles.timeText}>
-                          {formatTime(day.startTime)} - {formatTime(day.endTime)}
-                        </Text>
-                        {day.splitShift && (
-                          <Text style={styles.splitText}>
-                            | {formatTime(day.splitStartTime)} - {formatTime(day.splitEndTime)}
-                          </Text>
-                        )}
-                      </View>
-                    ) : (
-                      <Text style={styles.offText}>Libre</Text>
-                    )}
-                  </View>
-                ))}
+                {weeklySchedule.weeklySchedule.template.templateDays?.map((day, index) => {
+                  // Backend: dayOfWeek 0=Lunes, 1=Martes, ..., 6=Domingo
+                  const dayIndex = day.dayOfWeek ?? day.day_of_week ?? index;
+                  const isWorking = day.isWorkingDay ?? day.is_working_day ?? true;
+                  const isSplit = day.isSplitSchedule ?? day.is_split_schedule ?? false;
+                  
+                  return (
+                    <View key={index} style={styles.dayRow}>
+                      <Text style={styles.dayName}>
+                        {DAYS_OF_WEEK[dayIndex] || `Día ${dayIndex}`}
+                      </Text>
+                      {isWorking ? (
+                        <View style={styles.daySchedule}>
+                          {isSplit ? (
+                            <Text style={styles.timeText}>
+                              {formatTime(day.morningStart || day.morning_start)} - {formatTime(day.morningEnd || day.morning_end)} | {formatTime(day.afternoonStart || day.afternoon_start)} - {formatTime(day.afternoonEnd || day.afternoon_end)}
+                            </Text>
+                          ) : (
+                            <Text style={styles.timeText}>
+                              {formatTime(day.startTime || day.start_time)} - {formatTime(day.endTime || day.end_time)}
+                            </Text>
+                          )}
+                        </View>
+                      ) : (
+                        <Text style={styles.offText}>Libre</Text>
+                      )}
+                    </View>
+                  );
+                })}
               </Card>
             ) : (
               <Card style={styles.emptyScheduleCard}>
